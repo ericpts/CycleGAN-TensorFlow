@@ -1,13 +1,9 @@
-import tensorflow as tf
 import random
 import os
+from os import scandir
 
-try:
-  from os import scandir
-except ImportError:
-  # Python 2 polyfill module
-  from scandir import scandir
-    
+import tensorflow as tf
+
 
 FLAGS = tf.flags.FLAGS
 
@@ -59,7 +55,7 @@ def _bytes_feature(value):
   return tf.train.Feature(bytes_list=tf.train.BytesList(value=[value]))
 
 
-def _convert_to_example(file_path, image_buffer):
+def _convert_to_example(file_path: str, image_buffer: str):
   """Build an Example proto for an example.
   Args:
     file_path: string, path to an image file, e.g., '/path/to/example.JPG'
