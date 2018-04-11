@@ -21,7 +21,8 @@ def main():
     assert len(train) == ntrain
 
     def force_make(path: Path):
-        shutil.rmtree(str(path))
+        if path.exists():
+            shutil.rmtree(str(path))
         path.mkdir()
 
     force_make(comp / 'testA')
