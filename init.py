@@ -20,18 +20,20 @@ def main():
     assert len(test) == ntest
     assert len(train) == ntrain
 
-    (comp / 'testA').mkdir()
-    (comp / 'trainA').mkdir()
+    def force_make(path: Path):
+        shutil.rmtree(str(path))
+        path.mkdir()
+
+    force_make(comp / 'testA')
+    force_make(comp / 'trainA')
 
     for f in test:
         shutil.copy(str(f), str(comp / 'testA'))
     for f in train:
         shutil.copy(str(f), str(comp / 'trainA'))
 
-
-
-    (comp / 'testB').mkdir()
-    (comp / 'trainB').mkdir()
+    force_make(comp / 'testB')
+    force_make(comp / 'trainB')
 
     def conv(src: str, dst: str):
         subprocess.run(['convert', src, '-colorspace', 'Gray', dst])
