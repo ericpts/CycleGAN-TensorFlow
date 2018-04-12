@@ -5,7 +5,24 @@ import subprocess
 from random import randint, shuffle
 from pathlib import Path
 
-def main():
+datasets = [apple2orange, summer2winter_yosemite, horse2zebra, monet2photo, cezanne2photo, ukiyoe2photo, vangogh2photo, maps, cityscapes, facades, iphone2dslr_flower, ae_photos]
+
+def download_all():
+    for d in datasets:
+        subprocess.run(['bash', 'download_dataet.sh', d], check=True)
+
+def make_comp():
+    comp = Path('data/comp')
+    if comp.exists():
+        shutil.rmtree(str(comp))
+    comp.mkdir()
+
+    for d in datasets:
+        dpath = Path('data') / d
+        for img in dpath.glob('**/*.jpg'):
+            shutil.copy(str(img), str(comp))
+
+def partition():
     comp = Path('data/comp')
     images = list(comp.glob('*.jpg'))
     shuffle(images)
@@ -37,13 +54,18 @@ def main():
     force_make(comp / 'trainB')
 
     def conv(src: str, dst: str):
-        subprocess.run(['convert', src, '-colorspace', 'Gray', dst])
+        subprocess.run(['convert', src, '-colorspace', 'Gray', dst], check=True)
 
     for f in test:
         conv(str(f), str(comp / 'testB' / f.name))
     for f in train:
         conv(str(f), str(comp / 'trainB' / f.name))
 
+
+def main():
+    download_all()
+    make_comp()
+    partition()
 
 if __name__ == '__main__':
     main()
