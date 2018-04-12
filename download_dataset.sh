@@ -37,5 +37,5 @@ ZIP_FILE=./data/$FILE.zip
 TARGET_DIR=./data/$FILE/
 mkdir -p $TARGET_DIR
 wget -N $URL -O $ZIP_FILE
-unzip $ZIP_FILE -d ./data/
+unzip -u $ZIP_FILE -d ./data/
 rm $ZIP_FILE
