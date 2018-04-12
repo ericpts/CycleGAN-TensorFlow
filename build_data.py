@@ -7,14 +7,14 @@ import tensorflow as tf
 
 FLAGS = tf.flags.FLAGS
 
-tf.flags.DEFINE_string('X_input_dir', 'data/apple2orange/trainA',
-                       'X input directory, default: data/apple2orange/trainA')
-tf.flags.DEFINE_string('Y_input_dir', 'data/apple2orange/trainB',
-                       'Y input directory, default: data/apple2orange/trainB')
-tf.flags.DEFINE_string('X_output_file', 'data/tfrecords/apple.tfrecords',
-                       'X output tfrecords file, default: data/tfrecords/apple.tfrecords')
-tf.flags.DEFINE_string('Y_output_file', 'data/tfrecords/orange.tfrecords',
-                       'Y output tfrecords file, default: data/tfrecords/orange.tfrecords')
+tf.flags.DEFINE_string('X_input_dir', 'data/comp/trainA',
+                       'X input directory, default: data/comp/trainA')
+tf.flags.DEFINE_string('Y_input_dir', 'data/comp/trainB',
+                       'Y input directory, default: data/comp/trainB')
+tf.flags.DEFINE_string('X_output_file', 'data/tfrecords/colored.tfrecords',
+                       'X output tfrecords file, default: data/tfrecords/colored.tfrecords')
+tf.flags.DEFINE_string('Y_output_file', 'data/tfrecords/black.tfrecords',
+                       'Y output tfrecords file, default: data/tfrecords/black.tfrecords')
 
 
 def data_reader(input_dir, shuffle=True):
