@@ -5,11 +5,22 @@ import subprocess
 from random import randint, shuffle
 from pathlib import Path
 
-datasets = [apple2orange, summer2winter_yosemite, horse2zebra, monet2photo, cezanne2photo, ukiyoe2photo, vangogh2photo, maps, cityscapes, facades, iphone2dslr_flower, ae_photos]
+datasets = ['apple2orange',
+        'summer2winter_yosemite',
+        'horse2zebra',
+        'monet2photo',
+        'cezanne2photo',
+        'ukiyoe2photo',
+        'vangogh2photo',
+        'maps',
+        'cityscapes',
+        'facades',
+        'iphone2dslr_flower',
+        'ae_photos']
 
 def download_all():
     for d in datasets:
-        subprocess.run(['bash', 'download_dataet.sh', d], check=True)
+        subprocess.run(['bash', 'download_dataset.sh', d], check=True)
 
 def make_comp():
     comp = Path('data/comp')
