@@ -53,24 +53,24 @@ def partition():
             shutil.rmtree(str(path))
         path.mkdir()
 
-    force_make(comp / 'testA')
-    force_make(comp / 'trainA')
-
-    for f in test:
-        shutil.copy(str(f), str(comp / 'testA'))
-    for f in train:
-        shutil.copy(str(f), str(comp / 'trainA'))
-
-    force_make(comp / 'testB')
-    force_make(comp / 'trainB')
 
     def conv(src: str, dst: str):
         subprocess.run(['convert', src, '-colorspace', 'Gray', dst], check=True)
 
+    force_make(comp / 'testA')
+    force_make(comp / 'trainA')
     for f in test:
-        conv(str(f), str(comp / 'testB' / f.name))
+        conv(str(f), str(comp / 'testA' / f.name))
     for f in train:
-        conv(str(f), str(comp / 'trainB' / f.name))
+        conv(str(f), str(comp / 'trainA' / f.name))
+
+    force_make(comp / 'testB')
+    force_make(comp / 'trainB')
+
+    for f in test:
+        shutil.copy(str(f), str(comp / 'testB'))
+    for f in train:
+        shutil.copy(str(f), str(comp / 'trainB'))
 
 
 def main():

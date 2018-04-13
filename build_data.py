@@ -11,10 +11,10 @@ tf.flags.DEFINE_string('X_input_dir', 'data/comp/trainA',
                        'X input directory, default: data/comp/trainA')
 tf.flags.DEFINE_string('Y_input_dir', 'data/comp/trainB',
                        'Y input directory, default: data/comp/trainB')
-tf.flags.DEFINE_string('X_output_file', 'data/tfrecords/colored.tfrecords',
-                       'X output tfrecords file, default: data/tfrecords/colored.tfrecords')
-tf.flags.DEFINE_string('Y_output_file', 'data/tfrecords/black.tfrecords',
-                       'Y output tfrecords file, default: data/tfrecords/black.tfrecords')
+tf.flags.DEFINE_string('X_output_file', 'data/tfrecords/black.tfrecords',
+                       'X output tfrecords file, default: data/tfrecords/black.tfrecords')
+tf.flags.DEFINE_string('Y_output_file', 'data/tfrecords/colored.tfrecords',
+                       'Y output tfrecords file, default: data/tfrecords/colored.tfrecords')
 
 
 def data_reader(input_dir, shuffle=True):
