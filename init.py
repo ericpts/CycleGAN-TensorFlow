@@ -55,7 +55,9 @@ def partition():
 
 
     def conv(src: str, dst: str):
+        print('Converting {}'.format(src))
         subprocess.run(['convert', src, '-colorspace', 'Gray', dst], check=True)
+        subprocess.run(['convert', dst, '-colorspace', 'sRGB', '-type', 'truecolor', dst], check=True)
 
     force_make(comp / 'testA')
     force_make(comp / 'trainA')
