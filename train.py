@@ -109,7 +109,7 @@ def train():
           logging.info('  F_loss   : {}'.format(F_loss_val))
           logging.info('  D_X_loss : {}'.format(D_X_loss_val))
 
-        if step % 5000 == 0:
+        if step % 2500 == 0:
           save_path = saver.save(sess, checkpoints_dir + "/model.ckpt", global_step=step)
           logging.info("Model saved in file: %s" % save_path)
 
