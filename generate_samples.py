@@ -13,7 +13,7 @@ def run_inference(model: Path, in_file: Path, out_file: Path) -> None:
         '--model', str(model),
         '--input', str(in_file),
         '--output', str(out_file),
-        '--image_size', 256], check=True)
+        '--image_size', '256'], check=True)
 
 
 def main():
