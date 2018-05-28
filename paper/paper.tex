@@ -12,6 +12,7 @@
 \usepackage{enumerate}
 \usepackage{listings}
 \usepackage{hyperref}
+\usepackage{float}
 \usepackage{url}
 \usepackage{enumitem}
 \usepackage[margin=1in]{geometry}
@@ -52,7 +53,7 @@
 
 \title{Colorizarea pozelor alb-negru}
 \date{}
-\author{Eric Petru Stavarache}
+\author{Eric Petru Stavarache, Lucian Bicsi}
 
 \begin{document}
 
@@ -62,9 +63,9 @@
 
 
 \begin{abstract}
-    Aceasta lucrare trateaza colorizarea pozelor folosind retele adversariale, in particular arhitectura CycleGAN.
-
-    Voi compara rezultatele cu abordarile traditionale.
+    Aceasta lucrare trateaza colorizarea pozelor folosind retele adversariale generative, in particular arhitecturile CycleGAN si StarGAN.
+    
+    Scopul lucrarii este de a testa capacitatea de invatare a retelelor pe problema colorizarii in particular si de a o compara cu abordarile traditionale.
 \end{abstract}
 
 \section{Introducere}
@@ -72,33 +73,32 @@
 Colorizarea pozelor alb-negru este o sarcina dificila pentru metodele traditionale de invatare.
 
 Una dintre cele mai mari contributii la aceasta dificultate este faptul ca retele traditionale sunt specializate pe minimizarea unei pierderi de tipul $log-loss$ sau $L2$.
-Considerand spatiul 3-dimensional al culorilor pixelilor RGB: $\{0, 1, ..., 255 \}^{3}$. Punctele care minimizeaza suma distantelor $L2$ tind sa fie distribuite in jurul culorii gri.
-Din aceasta cauza, pozele generate tind sa fie preponderent gri si lipsite de viata.
+Considerand spatiul 3-dimensional al culorilor pixelilor RGB: $\{0, 1, ..., 255 \}^{3}$. Punctele care minimizeaza suma distantelor $L2$ tind sa fie distribuite in jurul mediei distributiei intensitatii, astfel rezultand poze preponderent in tonuri de gri, lipsite de vibranta colora.
 
 \section{Munca Anterioara}
 
 Abordarea clasica de colorizare a pozelor este bazata pe retele convolutionale, iar rezultatele din 2016 ale lui Richard Zhang et al sunt impresionante [1][2].
-Pentru a rezolva problema distributiei culorilor, ei modifica functia de pierdere pentru a penaliza culorile care nu apar frecvent in poze.
+Pentru a rezolva problema distributiei culorilor, autorii propun modificarea functiei de pierdere pentru a penaliza culorile care nu apar frecvent in poze.
 i.e., desi culoarea gri minimizeaza $L2-loss$, nu este intalnita foarte des in pozele adevarate, deci nu va mai fi culoare dominanta in pozele colorizate.
 
 
 \section{Preliminarii}
 
-\subsection{Notiuni utilizate}
+\subsection{Notiuni generale}
 
 \begin{subsubsection}{Retele generative adversariale}
 \begin{defi}
-Retelele generative adversariale (eng. Generatv Adversarial Network) au fost inventate de catre Ian Goodfellow in 2014.
+Retelele generative adversariale (eng. Generative Adversarial Network) au fost inventate de catre Ian Goodfellow in 2014.
 Acestea sunt cea mai noua metoda de a rezolva problema esantionarii dintr-un spatiu al datelor unde abordarile traditionale au un bias catre medie. [5].
 
 Aceste retele sunt compuse din doua parti: reteaua generatoare si reteaua discriminatoare.
-Reteaua generatoare G incearca sa genereze output din distrubtia $O$, bazandu-se fie pe input din distributia $I$. Vom nota distributia lui G cu $G$.
-Reteaua discriminatoare D primeste ca input $i$. D incearca sa distinga daca $i$ a provenit din $O$, distributia adevarata a datelor, sau din $G$, distributia pe care o genereaza G.
+Reteaua generatoare $G$ incearca sa genereze output din distrubtia $\mathcal{O}$, bazandu-se fie pe input din distributia $\mathcal{I}$. Vom nota distributia lui $G$ cu $\mathcal{G}$.
+Reteaua discriminatoare $D$ consta intr-un \textbf{clasificator (binar)} care primeste ca input o poza $i \in \mathcal{I}$ si incearca sa distinga daca $i$ a provenit din $\mathcal{O}$, distributia adevarata a datelor, sau din $\mathcal{G}$, distributia pe care o genereaza $G$.
 
-Pierderea retelei G este data de cat de bine reuseasca sa "pacaleasca" reteaua D, in timp ce pierderea retelei D este cat de bine reuseste sa distinga intre datele adevarate si cele artificiale.
+Indicele de performanta al retelei $G$ este data de cat de bine reuseasca sa "pacaleasca" reteaua $D$, in timp ce performanta retelei $D$ este cat de bine reuseste sa distinga intre datele adevarate si cele artificiale. Retelele vor fi antrenate in paralel, in decursul a mai multor epoci.
 
 \end{defi}
-Ideea centrala a acestui tip de model se bazeaza pe teoria jocurilor: pe domeniul de min-max. G incearca sa maximizeze scorul, in timp ce D inceaca sa minimizeze scorul.
+Motivatia centrala din spatele acestui tip de model isi are originile in \textbf{teoria jocurilor}. Retelele $G$ si $D$ pot fi vazuti ca doi adversari intr-un joc de tip min-max: $G$ incearca sa maximizeze scorul, in timp ce $D$ inceaca sa minimizeze scorul. Aici scorul este definit ca fiind, spre exemplu, numarul de poze clasificate gresit de catre $D$. De aici provine numele de \textsc{retele adversariale}.
 
 \begin{figure}
   \centering
@@ -113,49 +113,79 @@ Ideea centrala a acestui tip de model se bazeaza pe teoria jocurilor: pe domeniu
 
 Pentru antrenarea retelei am combinat dataset-urile puse la dispozitie de autorii CycleGAN [6].
 Aceste dataset-uri au fost menite pentru a transforma dintr-un domeniu specific in altul (de exemplu de a converti din cai in zebre).
-In abordarea mea, am creat reuniunea tuturor pozelor din dataset-uri, deoarece domeniul de poze color include toate celelate poze.
+Pentru a spori diversitatea, am creat datasetul prin reuniunea tuturor pozelor puse la dispozitie, deoarece domeniul de poze color include toate celelate poze.
 Pentru fiecare poza din reuniune, am generat varianta alb-negru.
 
 \section{Colorizare folosind GAN-uri}
 
 Aceasta lucrare incearca sa trateze problema colorizarii folosind Retele Adversariale Generative - GAN.
 Abordarea naiva ar fi formata din cele doua componente clasice: reteaua generatoare si cea discriminatoare.
-Reteaua generatoare G primeste o imagine alb-negru si generaza una color.
-Reteaua discriminatoare D primeste o imagine color, si incearca sa distinga daca este o imagine naturala, sau daca a fost generata de catre D.
+Reteaua generatoare $G$ primeste o imagine alb-negru si generaza una color.
+Reteaua discriminatoare $D$ primeste o imagine color, si incearca sa distinga daca este o imagine naturala, sau daca a fost generata de catre $D$.
 
-Problema cu aceasta abordare este ca reteaua generatoare descopera ca optim este sa genereze mereu aceeasi poza colorata, fara a tine cont de input. Pentru a rezolva asta, am utilizat abordarea prezentata in \textit{Unpaired Image-to-Image Translation using Cycle-Consistent Adversarial Networks}, sau CycleGAN [3][4].
+Principala problema cu aceasta abordare este ca reteaua generatoare descopera ca optim este sa genereze mereu aceeasi poza colorata, fara a tine cont de input. Pentru a rezolva asta, vom utiliza generatori bidirectionali, idee prezentata in cadrul a doua abordari arhitecturale: prima dintre ele se numeste \textit{Unpaired Image-to-Image Translation using Cycle-Consistent Adversarial Networks}, sau CycleGAN [3][4], iar a doua \textit{Unified Generative Adversarial Networks for Multi-Domain Image-to-Image Translation} sau StarGAN [7][8].
 
 \subsection{CycleGAN}
 
 CycleGAN este un model care rezolva problema ca output-ul generatorului nu depinde de input.
-Ideea centrala este sa avem un generator G1 care ne trece din domeniul $I$ in domeniul $G$ si un generator G2 care ne trece din $G$ in $I$.
+Ideea centrala este sa avem un generator $G1$ care ne trece din domeniul $\mathcal{I}$ in domeniul $\mathcal{G}$ si un generator $G2$ care ne trece din $\mathcal{G}$ in $\mathcal{I}$.
 Functiile lor de pierdere vor fi corelate de faptul ca vrem ca transformarea inversa sa fie idempotenta.
 i.e., daca din alb-negru trecem o poza in color si apoi inapoi in alb-negru, vrem ca cele doua poze alb-negru sa fie cat de similare se poate.
 
-\begin{figure}
+\begin{figure}[H]
   \centering
 
 	\begin{subfigure}{0.4\textwidth}
-		\includegraphics[width=0.5\linewidth]{model.jpg}
-		\caption{Ciclul A -> B -> A}
+	    \centering
+		\includegraphics[width=\linewidth]{model.jpg}
+		\caption{Ciclul A \Rightarrow B \Rightarrow A}
 	\end{subfigure}
-
+	\vspace{1em}
 	\begin{subfigure}{0.4\textwidth}
-		\includegraphics[width=0.5\linewidth]{model1.jpg}
-		\caption{Ciclul B -> A -> B}
+		\centering
+		\includegraphics[width=\linewidth]{model1.jpg}
+		\caption{Ciclul B \Rightarrow A \Rightarrow B}
 	\end{subfigure}
 
   \caption{Modelul de functionare CycleGAN}
   \label{fig:architecture}
 \end{figure}
 
+\subsection{StarGAN}
+
+StarGAN este oretea generativa, construita in original pentru transferul atributelor faciale si pentru a incerca sa reproduca expresii/gesturi faciale corespunzatoare sentimentelor primare (fericire, tristete, dezgust, surprindere, etc.). Strategia este asemanatoare cu cea din spatele CycleGAN, in sensul ca prezinta un generator cu functie dubla. In esenta, putem considera ca exista doi generatori, $G1$ si $G2$ mutual inversi (transforma imaginea in ambele sensuri) si un discriminator $D$. Arhitectura generatorilor este de tip \textbf{encoder-decoder}, in timp ce discriminatorul este un clasificator binar peste o retea convolutionala. 
+
+Diferenta principala intre functionalitatile StarGAN comparativ cu CycleGAN este ca StarGAN trateaza problema mai multor clase posibile de domenii, ceea ce nu ne este util in cazul colorizarii propriu-zise, insa se poate folosi daca dorim diverse tipuri de colorizari (sepia, noapte/zi, tonuri calde/reci, etc.). Cu toate acestea, pentru acest lucru este nevoie de un dataset mult mai mare si mai expresiv, de care nu dispunem momentan.
+
+Un mare avantaj in cadrul implementarii pytorch a StarGAN [8] este faptul ca reteaua este puternic customizabila, putand seta hiperparametri precum redimensionarea imaginilor input, setarea numarului de straturi intermediare in cadrul generatorului / discriminatorului, (astfel avand posibilitatea de a testa codul local pe o arhitectura minimala inainte de antrenarea propriu-zisa), setarea intervalului de iteratii la care este salvat modelul, capacitatea de a porni de la un model preantrenat, etc.
+
+\begin{figure}[H]
+  \centering
+
+	\begin{subfigure}{0.4\textwidth}
+	    \centering
+		\includegraphics[width=\linewidth]{stargan.jpg}
+		\caption{GAN clasic - generator pentru fiecare pereche de clase}
+	\end{subfigure}
+	\vspace{1em}
+	\begin{subfigure}{0.4\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]{stargan1.jpg}
+		\caption{StarGAN - un singur generator central, conectat in stea}
+	\end{subfigure}
+
+  \caption{Modelul de functionare StarGAN}
+  \label{fig:architecture}
+\end{figure}
 
 \section{Rezultate si posibile imbunatatiri}
 
-Pozele generate sunt destul de incetosate.
-Aceste fapt se genereaza cantitatii mici de date de antrenare folosite, iar o posibila imbunatatire ar fi utilizarea setului de antrenare imagenet
+Pozele generate de catre reteaua CycleGAN sunt destul de incetosate.
+Aceste fapt se genereaza cantitatii mici de date de antrenare folosite, iar o posibila imbunatatire ar fi utilizarea setului de antrenare ImageNET.
 
-\begin{figure}[h!]
+O alta imbunatatire generala posibila consta, bineinteles, in antrenarea mai multor iteratii si eventual in antrenarea unor retele mai adanci pe o cantitate mai mare de date mai mult timp.
+
+\begin{figure}[H]
 	\centering
 	\begin{subfigure}{0.4\textwidth}
 		\includegraphics[width=\linewidth]{input_sample.jpg}
@@ -166,7 +196,7 @@ Aceste fapt se genereaza cantitatii mici de date de antrenare folosite, iar o po
 		\includegraphics[width=\textwidth]{output_sample.jpg}
 		\caption{Poza colorata}
 	\end{subfigure}
-	\caption{Colorizarea unei poze}
+	\caption{Colorizarea unei poze cu CycleGAN}
 \end{figure}
 
 
@@ -178,5 +208,9 @@ Aceste fapt se genereaza cantitatii mici de date de antrenare folosite, iar o po
 [4] Jun-Yan Zhu, \textit{CycleGAN Project Page}, https://junyanz.github.io/CycleGAN/ \par
 [5] Ian J. Goodfellow et al \\ \textit{Generative Adversarial Networks}, https://arxiv.org/abs/1406.2661 \par
 [6] Taesung Park, \textit{CycleGAN datasets}, \\ https://people.eecs.berkeley.edu/~taesung\_park/CycleGAN/datasets/ \par
+[7] Yunjey Choi, Minje Choi, Munyoung Kim, Jung-Woo Ha, Sunghun Kim, Jaegul Choo, \textit{StarGAN: Unified Generative Adversarial Networks for Multi-Domain Image-to-Image Translation}, \\
+https://arxiv.org/abs/1711.09020
+
+
 
 \end{document}
