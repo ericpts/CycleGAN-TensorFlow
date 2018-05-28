@@ -17,24 +17,15 @@ def run_inference(model: Path, in_file: Path, out_file: Path) -> None:
 
 
 def main():
-    bw_src_dir = Path('data/comp/testA')
-    color_src_dir = Path('data/comp/testB')
+    parser = argparse.ArgumentParser(description='Generate color samples from black and white pictures.')
+    parser.add_argument('--nsamples', default=10, type=int, help='How many samples to generate.')
+    args = parser.parse_args()
 
-    bw_pictures = choices(
-            list(bw_src_dir.glob('**/*.jpg')), k=10)
-    color_pictures = choices(
-            list(color_src_dir.glob('**/*.jpg')), k=10)
-
-    os.makedirs('samples/bw2color', exist_ok=True)
-    os.makedirs('samples/color2bw', exist_ok=True)
-
-    bw2color_model = Path('pretrained/bw2color.pb')
-    color2bw_model = Path('pretrained/color2bw.pb')
-
-    for p in bw_pictures:
-        run_inference(bw2color_model, p, Path('samples/bw2color/') / p.name)
-    for p in color_pictures:
-        run_inference(color2bw_model, p, Path('samples/color2bw/') / p.name)
+    src_dir = Path('data/comp/testA')
+    pictures = choices(list(src_dir.glob('**/*.jpg')), k=args.nsamples)
+    model = Path('pretrained/bw2color.pb')
+    for p in pictures:
+        run_inference(model, p, Path('samples/') / p.name)
 
 if __name__ == '__main__':
     main()
