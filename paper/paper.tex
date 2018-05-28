@@ -64,7 +64,7 @@
 
 \begin{abstract}
     Aceasta lucrare trateaza colorizarea pozelor folosind retele adversariale generative, in particular arhitecturile CycleGAN si StarGAN.
-    
+
     Scopul lucrarii este de a testa capacitatea de invatare a retelelor pe problema colorizarii in particular si de a o compara cu abordarile traditionale.
 \end{abstract}
 
@@ -72,8 +72,8 @@
 
 Colorizarea pozelor alb-negru este o sarcina dificila pentru metodele traditionale de invatare.
 
-Una dintre cele mai mari contributii la aceasta dificultate este faptul ca retele traditionale sunt specializate pe minimizarea unei pierderi de tipul $log-loss$ sau $L2$.
-Considerand spatiul 3-dimensional al culorilor pixelilor RGB: $\{0, 1, ..., 255 \}^{3}$. Punctele care minimizeaza suma distantelor $L2$ tind sa fie distribuite in jurul mediei distributiei intensitatii, astfel rezultand poze preponderent in tonuri de gri, lipsite de vibranta colora.
+Una dintre cele mai mari contributii la aceasta dificultate o aduce faptul ca retele traditionale sunt specializate pe minimizarea unei pierderi de tipul $log-loss$ sau $L2$.
+Consideram spatiul 3-dimensional al culorilor pixelilor RGB: $\{0, 1, ..., 255 \}^{3}$. Punctele care minimizeaza suma distantelor $L2$ tind sa fie distribuite in jurul mediei distributiei intensitatii, astfel rezultand poze preponderent in tonuri de gri, lipsite de culori.
 
 \section{Munca Anterioara}
 
@@ -98,7 +98,7 @@ Reteaua discriminatoare $D$ consta intr-un \textbf{clasificator (binar)} care pr
 Indicele de performanta al retelei $G$ este data de cat de bine reuseasca sa "pacaleasca" reteaua $D$, in timp ce performanta retelei $D$ este cat de bine reuseste sa distinga intre datele adevarate si cele artificiale. Retelele vor fi antrenate in paralel, in decursul a mai multor epoci.
 
 \end{defi}
-Motivatia centrala din spatele acestui tip de model isi are originile in \textbf{teoria jocurilor}. Retelele $G$ si $D$ pot fi vazuti ca doi adversari intr-un joc de tip min-max: $G$ incearca sa maximizeze scorul, in timp ce $D$ inceaca sa minimizeze scorul. Aici scorul este definit ca fiind, spre exemplu, numarul de poze clasificate gresit de catre $D$. De aici provine numele de \textsc{retele adversariale}.
+Motivatia centrala din spatele acestui tip de model isi are originile in \textbf{teoria jocurilor}. Retelele $G$ si $D$ pot fi vazuti ca doi adversari intr-un joc de tip min-max: $G$ incearca sa maximizeze scorul, in timp ce $D$ incearca sa minimizeze scorul. Aici scorul este definit ca fiind, spre exemplu, numarul de poze clasificate gresit de catre $D$. De aici provine numele de \textsc{retele adversariale}.
 
 \begin{figure}
   \centering
@@ -132,7 +132,7 @@ Ideea centrala este sa avem un generator $G1$ care ne trece din domeniul $\mathc
 Functiile lor de pierdere vor fi corelate de faptul ca vrem ca transformarea inversa sa fie idempotenta.
 i.e., daca din alb-negru trecem o poza in color si apoi inapoi in alb-negru, vrem ca cele doua poze alb-negru sa fie cat de similare se poate.
 
-Evaluarea performantei celor doi generatori va fi facuta de catre doi discriminatori specializati $D1$ si $D2$. Astfel, $D1$ va evalua poze color adevarate vs. poze color false generate de catre $G1$, iar $D2$ va evalua poze alb-negru adevarate vs. poze alb-negru false generate de catre $G2$. 
+Evaluarea performantei celor doi generatori va fi facuta de catre doi discriminatori specializati $D1$ si $D2$. Astfel, $D1$ va evalua poze color adevarate vs. poze color false generate de catre $G1$, iar $D2$ va evalua poze alb-negru adevarate vs. poze alb-negru false generate de catre $G2$.
 
 CycleGAN a obtinut rezultate remarcabile in cadrul altor task-uri asemanatoare computational cu cel al colorizarii, precum transformarea cailor in zebre, transformarea peisajelor de vara in iarna, zi - noapte, etc.
 
@@ -157,7 +157,7 @@ CycleGAN a obtinut rezultate remarcabile in cadrul altor task-uri asemanatoare c
 
 \subsection{StarGAN}
 
-StarGAN este oretea generativa, construita in original pentru transferul atributelor faciale si pentru a incerca sa reproduca expresii/gesturi faciale corespunzatoare sentimentelor primare (fericire, tristete, dezgust, surprindere, etc.). Strategia este diferita de cea din spatele CycleGAN, in sensul ca prezinta un generator cu functie multipla, in locul celor doi generatori $G1$ si $G2$ mutual inversi ai retelei CycleGAN. Acelasi lucru se intampla si in cadrul disriminatorilor, fiind imbinati intr-unul singur, care nu mai este binar. Arhitectura generatorului este de tip \textbf{encoder-decoder}, in timp ce discriminatorul este un clasificator binar peste o retea convolutionala. 
+StarGAN este o retea generativa, construita in original pentru transferul atributelor faciale si pentru a incerca sa reproduca expresii/gesturi faciale corespunzatoare sentimentelor primare (fericire, tristete, dezgust, surprindere, etc.). Strategia este diferita de cea din spatele CycleGAN, in sensul ca prezinta un generator cu functie multipla, in locul celor doi generatori $G1$ si $G2$ mutual inversi ai retelei CycleGAN. Acelasi lucru se intampla si in cadrul disriminatorilor, fiind imbinati intr-unul singur, care nu mai este binar. Arhitectura generatorului este de tip \textbf{encoder-decoder}, in timp ce discriminatorul este un clasificator binar peste o retea convolutionala.
 
 Diferenta principala intre functionalitatile StarGAN comparativ cu CycleGAN este ca StarGAN trateaza problema mai multor clase posibile de domenii, ceea ce nu ne este util in cazul colorizarii propriu-zise, insa se poate folosi daca dorim diverse tipuri de colorizari (sepia, noapte/zi, tonuri calde/reci, etc.). Cu toate acestea, pentru acest lucru este nevoie de un dataset mult mai mare si mai expresiv, de care nu dispunem momentan.
 
@@ -210,9 +210,9 @@ Un alt mod prin care performantele pot fi imbunatatite sunt prin calibrarea mai 
 
 \subsection{StarGAN}
 
-Spre deosebire de rezultatele obtinute de reteaua CycleGAN, reteaua StarGAN, spre surprinderea nostra, \textbf{nu o abtinut rezultate} dupa un numar mare de iteratii. In configuratia default, reteaua nu colorizeaza poze alb-negru si nu decolorizeaza poze color, ci ajunge sa reproduca imaginile din input in ambele cazuri.
+Spre deosebire de rezultatele obtinute de reteaua CycleGAN, reteaua StarGAN, spre surprinderea nostra, \textbf{nu a obtinut rezultate} dupa un numar mare de iteratii. In configuratia default, reteaua nu colorizeaza poze alb-negru si nu decolorizeaza poze color, ci ajunge sa reproduca imaginile din input in ambele cazuri.
 
-Ipoteza noastra este ca problema transferului atributelor faciale, in cadrul careia o transformare [$happy \Rightarrow sad$] si una [$sad \Rightarrow happy$] impart o cantitate foarte mare din informatiile imaginei input (i.e., restul imaginii ramane neschimbat), fapt ce determina ca un generator "shared" sa reuseasca sa codifice informatiile esentiale cu un numar mic de parametri, in timp ce problema colorizarii formalizat in acelasi cadru prezinta diferente uriase la nivel de structura a pozei. In cadrul problemei colorizarii, discriminatorul StarGAN trebuie sa invete dubla functionalitate de colorizare si decolorizare aproximativ independent in cadrul acelorasi parametri. 
+Ipoteza noastra este ca problema transferului atributelor faciale, in cadrul careia o transformare [$happy \Rightarrow sad$] si una [$sad \Rightarrow happy$] impart o cantitate foarte mare din informatiile imaginei input (i.e., restul imaginii ramane neschimbat), fapt ce determina ca un generator "shared" sa reuseasca sa codifice informatiile esentiale cu un numar mic de parametri, in timp ce problema colorizarii formalizat in acelasi cadru prezinta diferente uriase la nivel de structura a pozei. In cadrul problemei colorizarii, discriminatorul StarGAN trebuie sa invete dubla functionalitate de colorizare si decolorizare aproximativ independent in cadrul acelorasi parametri.
 
 \section{Bibliografie}
 
