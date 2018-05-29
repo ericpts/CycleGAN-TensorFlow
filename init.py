@@ -13,7 +13,6 @@ datasets = ['apple2orange',
         'ukiyoe2photo',
         'vangogh2photo',
         'maps',
-        'cityscapes',
         'facades',
         'iphone2dslr_flower',
         'ae_photos']
